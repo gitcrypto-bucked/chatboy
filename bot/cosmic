@@ -1,0 +1,239 @@
+<?php
+declare(strict_types=1);
+
+
+
+class Cosmic
+{
+    
+    public function __construct()
+    {
+        $this->env();
+        if($this->saudation())
+        {
+            return $this->start();
+        }    
+    }
+
+    private function saudation()
+    {
+        echo "Hello I'm cosmic.";
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo "  *   *   *";
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        return true;
+    }
+
+    private function env()
+    {   
+        $env = [];
+        $file_handle = fopen(  '.env', "r");
+        while (!feof($file_handle)) 
+        {
+            $line = fgets($file_handle);
+            // Process the $line here
+            if($line!=NULL)
+            {
+                $env[] =(explode('=', $line)); 
+            }
+        }
+        for($i =0 ; $i < sizeof($env); $i++)
+        {
+            if(isset($env[$i][1]))
+            {
+                putenv($env[$i][0].'='.@trim(preg_replace('/\s\s+/', ' ',$env[$i][1])));
+
+            }
+            
+        }
+    }
+
+    private function start()
+    {
+
+        global $argv;
+
+        $saudations= ['Hi', "Hello", "Howdy", "What’s up?","How’s it going", "Good Morning", "Good Night", "Good Afternun"];
+        $saudations = array_map('strtolower', $saudations);
+
+        if(sizeof($argv)>0)
+        {   
+            if(!empty($argv[1]))
+            {
+                $response = array_search($argv[1], $saudations);
+                if($response !== false)
+                {
+                    echo $saudations[$response];
+                    echo PHP_EOL;
+                }
+            }
+            
+            return $this->process();
+        } 
+    }
+
+    private function process()
+    {
+        global $argv;
+        if( isset($argv[1]) &&  str_contains($argv[1], ':')!=false)
+        {
+            $todo = (explode(':',  $argv[1] )); 
+        }
+       switch($todo)
+       {
+            default: 
+                if( isset($argv[1]) &&  $argv[1]=='serve')
+                    {
+                           $port = strlen(getenv('APP_PORT')) ? getenv('APP_PORT') : 8080;
+                            echo 'Please wait, I am starting the server.';
+                            echo PHP_EOL;
+                            shell_exec('php -S localhost:'.$port);
+                            echo PHP_EOL;
+                            echo 'Server started.';
+                            echo PHP_EOL;
+                        return;
+                    }
+                    else if( isset($argv[1]) &&  $argv[1]=='up')
+                    {
+                        if($this->confirmAction("If you have configured the .env, we will start creating the database. He is sure? (y/n): "))
+                        {
+                            return $this->up();
+                        }
+                    }   
+                    echo "Sorry I can't understand.".PHP_EOL;
+                    echo PHP_EOL;
+                     echo PHP_EOL;
+                    echo "If its the first run use php cosmic up ";
+                    echo PHP_EOL;
+                     echo PHP_EOL;
+                    echo "If just all created use php cosmic serve ";
+                    echo PHP_EOL;
+                     echo PHP_EOL;
+                     exit();
+            break;
+       }
+    }
+
+    private function confirmAction(string $message = "Are you sure? (y/n): "): bool
+    {
+        while (true) {
+            $response = strtolower(readline($message)); // Read input and convert to lowercase
+
+            if (in_array($response, ['y', 'yes','Y','Yes'])) {
+                return true;
+            } elseif (in_array($response, ['n', 'no','N','No'])) {
+                return false;
+            } else {
+                echo "Invalid input. Please enter 'y' or 'n'.\n";
+            }
+        }
+    }
+
+
+    private function up()
+    {
+        $this->env();
+        #$link = mysqli_connect(trim(getenv('DB_HOST')),getenv('DB_USERNAME'),getenv('DB_PASSWORD'), ''  ) or die( mysqli_error($link) );
+            $dsn = 'mysql:host='.trim(getenv('DB_HOST')).';dbname='.'';
+            $username = trim(getenv('DB_USERNAME'));
+            $password = trim(getenv('DB_PASSWORD'));
+
+            $pdo = new \PDO($dsn, $username, $password);
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+  
+
+        $pdo->query("CREATE DATABASE IF NOT EXISTS ".trim(getenv('DB_DATABASE')));
+        $pdo->query("USE ".trim(getenv('DB_DATABASE')));
+
+        $SQL = 'DROP TABLE IF EXISTS '.trim(getenv('DB_DATABASE')).'.attemps;
+
+                CREATE TABLE '.trim(getenv('DB_DATABASE')).'.attemps 
+                (
+                    id int  PRIMARY KEY AUTO_INCREMENT,
+                    query text,
+                    response text,
+                    sessionId varchar(191) DEFAULT NULL,
+                    created_at timestamp NULL DEFAULT NULL
+                ) 
+                ';
+        $pdo->query($SQL);
+        
+        $SQL = 'DROP TABLE IF EXISTS '.trim(getenv('DB_DATABASE')).'.intents;
+                    CREATE TABLE '.trim(getenv('DB_DATABASE')).'.intents 
+                    (
+                        id int NOT NULL  PRIMARY KEY AUTO_INCREMENT,
+                        keywords text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+                        response text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+                        alias text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
+                    )
+                ';
+        $pdo->query($SQL);
+        
+        $SQL = 'INSERT INTO intents (id, keywords, response, alias) VALUES
+                (1, "exportar", "Para exportar um excel, acesse o menu de filtros e clique no botão exportar. <br> Como na imagem a seguir! <br>", "excel"),
+                (2, "senha", "Para alterar sua senha clique no ícone de perfil no canto superior direito.<br> Como na imagem a seguir!", "senha"),
+                (3, "busca", "Para fazer uma pesquisa, acesse o menu de filtros e clique no botão Filtrar e irá exibir o painel com opções de filtros.<br> Como na imagem a seguir! <br>", "filtrar"),
+                (4, "rastreamento", "Para rastrear um pedido, acesse o menu de rastreamento e digite o número do pedido. <br> Como na imagem a seguir! <br>", "rastreamento"),
+                (5, "nota fiscal", "Para obter a nota fiscal do rastreio, acesse rastreamento e clique no link Baixar <br> Como na imagem a seguir! <br>", "nota fiscal"),
+                (6, "nfe", "Para obter a nota fiscal do rastreio, acesse rastreamento e clique no link Baixar <br> Como na imagem a seguir! <br>", "nfe"),
+                (7, "danfe", "Para obter a nota fiscal do rastreio, acesse rastreamento e clique no link Baixar <br> Como na imagem a seguir! <br>", "danfe"),
+                (8, "ajuda", "Você pode perguntar para mim ou ler o manual basta clicar no ícone de perfil no canto superior direito. <br> Como na imagem a seguir!  <br>", "ajuda"),
+                (9, "manual", "Você pode perguntar para mim ou ler o manual basta clicar no ícone de perfil no canto superior direito. <br> Como na imagem a seguir!  <br>", "manual");
+            ';
+        $pdo->query($SQL);
+
+        
+        $SQL = 'DROP TABLE IF EXISTS '.trim(getenv('DB_DATABASE')).'.messages;
+                    CREATE TABLE '.trim(getenv('DB_DATABASE')).'.messages (
+                    id int NOT NULL AUTO_INCREMENT,
+                    session_id text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+                    rsponse text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+                    text text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+                    created_at timestamp NULL DEFAULT NULL,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                ';
+
+        $pdo->query($SQL);
+
+        $SQL = '
+                DROP TABLE IF EXISTS '.trim(getenv('DB_DATABASE')).'.sessions;
+                CREATE TABLE '.trim(getenv('DB_DATABASE')).'.sessions (
+                    sessionId varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                    created_at timestamp NULL DEFAULT NULL,
+                    updated_at timestamp NULL DEFAULT NULL,
+                    meta varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+                    response varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                    PRIMARY KEY (sessionId)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;';
+
+        $pdo->query($SQL);
+
+        unset($pdo);
+
+        echo "Database create successfull";
+
+        echo PHP_EOL;
+
+        echo "Next time just use php cosmic serve";
+
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo PHP_EOL;
+
+        $port = strlen(getenv('APP_PORT')) ? getenv('APP_PORT') : 8080;
+                echo 'Please wait, I am starting the server.';
+                echo PHP_EOL;
+                shell_exec('php -S localhost:'.$port);
+                echo PHP_EOL;
+                echo 'Server started.';
+                echo PHP_EOL;
+                return;
+       
+    }
+}
+
+return new Cosmic();

@@ -1,0 +1,58 @@
+[
+
+  {
+    "id": "bye",
+    "examples": ["bye", "goodbye", "see you", "later"],
+    "responses": ["Goodbye! Have a great day.", "See you later!"]
+  },
+  {
+    "id": "thanks",
+    "examples": ["Obrigado", "Obrigada", "Muito Obrigado", "Muito Obrigada","Valeu"],
+    "responses": ["De nada!", "Que bom que pude ajudar!","Tenha um ótimo dia!","Muito obrigado!","Seja bem-vindo!"]
+  },
+  {
+    "id": "hours",
+    "examples": ["what are your hours", "opening hours", "when are you open", "hours of operation"],
+    "responses": ["Our support is available 9am–6pm Mon–Fri.", "We are open Monday to Friday, 9:00–18:00."]
+  },
+   {
+    "id": "acoes",
+    "examples": ["Exportar excel", "Exportar excel com filtros","Exportar planilha","Como faço para exportar um excel"],
+    "responses": ["Para exportar um excel, acesse o menu de filtros e clique no botão exportar.\n Como na imagem a seguir! \n"]
+  },
+  {
+    "id": "user",
+    "examples":  ["Como consigo alterar minha senha","Trocar senha", "Alterar senha","como faço para alterar minha senha"],
+    "responses": ["Para alterar sua senha clique no ícone de perfil no canto superior direito.\n Como na imagem a seguir! \n"]
+  },
+   {
+    "id": "busca",
+    "examples":  ["Como fazer uma pesquisa", "Buscar","como faço para buscar algo"],
+    "responses": ["Para fazer uma pesquisa, acesse o menu de filtros e clique no botão `Filtrar` e irá exibir o painel com opções de filtros.\n Como na imagem a seguir! \n"]
+  },
+  {
+    "id": "rastreamento",
+    "examples":  ["Como rastrear um pedido", "Rastrear pedido","como faço para rastrear um pedido","Como consigo a nota fiscal do rastreionota"],
+    "responses": ["Para rastrear um pedido, acesse o menu de rastreamento e digite o número do pedido.\n Como na imagem a seguir! \n"]
+  },
+   {
+    "id": "nota fiscal",
+    "examples":  ["Como consigo a nota fiscal do rastreio", "Como consigo a nfe do rastreio"],
+    "responses": ["Para obter a nota fiscal do rastreio, acesse rastreamento e clique no link `Baixar` \n Como na imagem a seguir! \n"]
+  },
+     {
+    "id": "danfe",
+    "examples":  ["Como consigo a nota fiscal do rastreio", "Como consigo a nfe do rastreio"],
+    "responses": ["Para obter a nota fiscal do rastreio, acesse rastreamento e clique no link `Baixar` \n Como na imagem a seguir! \n"]
+  },
+{
+    "id": "chamado",
+    "examples":  ["Como eu abro um chamado", "Como faço para abrir um chamado"],
+    "responses": ["Para abir um chamado, acesse a página de  chamados e clique no botão `Abrir chamado`.\n Como na imagem a seguir! \n"]
+  },
+  {
+    "id": "fallback",
+    "examples": [],
+    "responses": ["Desculpe - eu não entendi isso. Você pode reformular?", "Não tenho certeza se entendi. Você poderia tentar novamente?"]
+  }
+]
